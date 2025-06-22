@@ -1,7 +1,10 @@
-# Portafolio Web Responsivo
+# Lab's
+Portafolio Web Responsivo
+# UISEK
+Matheo J. Santillan
+Ing software
 
-# Matheo Santillan
-# Ing software
+# About
 
 Este es mi portafolio web desarrollado para el Laboratorio 7 de la asignatura - Lab's.
 
