@@ -1,4 +1,4 @@
-@@ -4,10 +4,20 @@ Portafolio Web Responsivo
+Portafolio Web Responsivo
 Matheo J. Santillan
 Ing software
 
