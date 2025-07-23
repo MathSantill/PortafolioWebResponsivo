@@ -1,6 +1,16 @@
+Portafolio Web Responsivo
+Matheo J. Santillan
+Ing software
+
+# About
 # Portafolio Web Accesible
 
-Este portafolio fue mejorado en el Laboratorio 8 para incluir principios de accesibilidad e inclusión digital.
+Este es mi portafolio web desarrollado para el Laboratorio 7 de la asignatura - Lab's.
+
+- [Prototipo en Figma](https://www.figma.com/design/hWVaEGAX6DmcF0Tq5oufGu/portafolio?node-id=0-1&p=f&t=GvI87Cyorm1kmRFO-0)
+
+- [Sitio en GitHub Pages](https://mathsantill.github.io/PortafolioWebResponsivo/)
+
 
 ### Mejoras realizadas:
 - Uso de etiquetas semánticas (`header`, `main`, `section`, `footer`) para estructura clara.
