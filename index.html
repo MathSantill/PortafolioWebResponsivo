@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matheo Santillan - Portafolio Accesible con Eye-Tracking</title>
+  <title>Matheo Santillan - Portafolio Accesible</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --color-principal: #f97316;
       --color-principal-hover: #ea580c;
+      --control-bg: rgba(25, 25, 35, 0.95);
     }
 
     body {
@@ -82,49 +84,92 @@
       border-radius: 10px;
     }
 
-    /* Controles eye-tracking */
-    #tracking-controls {
+    /* Controles eye-tracking compactos */
+    #eye-tracking-controls {
       position: fixed;
       bottom: 20px;
       right: 20px;
       z-index: 1001;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
-
-    .tracking-btn {
-      padding: 10px 20px;
+    
+    #eye-toggle-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
       background: var(--color-principal);
-      color: black;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       transition: all 0.3s;
     }
-
-    .tracking-btn:hover {
-      background: var(--color-principal-hover);
+    
+    #eye-toggle-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    #eye-toggle-btn i {
+      font-size: 24px;
+      color: black;
+    }
+    
+    #tracking-panel {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      background: var(--control-bg);
+      border-radius: 10px;
+      padding: 15px;
+      width: 220px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      display: none;
+    }
+    
+    .tracking-btn {
+      padding: 8px 12px;
+      background: #333348;
       color: white;
-    }
-
-    #btnStopTracking {
-      background: #dc3545;
-    }
-
-    #btnStopTracking:hover {
-      background: #bd2130;
-    }
-
-    #calibration-status {
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 10px;
+      border: none;
       border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    
+    .tracking-btn i {
+      margin-right: 8px;
+      width: 20px;
       text-align: center;
     }
-
+    
+    .tracking-btn:hover {
+      background: #3d3d5a;
+    }
+    
+    #btnStopTracking {
+      background: #d14343;
+    }
+    
+    #btnStopTracking:hover {
+      background: #b52e2e;
+    }
+    
+    #calibration-status {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      padding: 8px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    
     #heatmapContainer {
       position: fixed;
       top: 0;
@@ -134,7 +179,7 @@
       pointer-events: none;
       z-index: 1000;
     }
-
+    
     #calibration-point {
       position: fixed;
       width: 20px;
@@ -144,26 +189,47 @@
       z-index: 1002;
       pointer-events: none;
       display: none;
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.8);
     }
-
+    
     .calibration-active {
       cursor: none !important;
     }
-
+    
     #videoContainer {
       position: fixed;
       bottom: 20px;
       left: 20px;
-      width: 200px;
+      width: 180px;
       z-index: 1001;
       background: rgba(0,0,0,0.7);
       border-radius: 10px;
       overflow: hidden;
       display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-
+    
     #videoContainer video {
       width: 100%;
+    }
+    
+    #heatmap-intensity {
+      margin-top: 10px;
+    }
+    
+    .intensity-control {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .intensity-control label {
+      font-size: 12px;
+      width: 100px;
+    }
+    
+    .intensity-control input {
+      flex: 1;
     }
   </style>
 </head>
@@ -265,17 +331,41 @@
     <p>© 2025 Matheo Santillan — <a href="mailto:matheo.santillan@uisek.edu.ec">matheo.santillan@uisek.edu.ec</a></p>
   </footer>
 
-  <!-- Controles eye-tracking -->
-  <div id="tracking-controls">
-    <button id="btnStartTracking" class="tracking-btn" aria-label="Iniciar seguimiento ocular">Iniciar seguimiento</button>
-    <button id="btnCalibrate" class="tracking-btn" aria-label="Calibrar seguimiento ocular">Calibrar</button>
-    <button id="btnStopTracking" class="tracking-btn" aria-label="Detener seguimiento ocular">Detener seguimiento</button>
-    <div id="calibration-status">Calibración: No iniciada</div>
+  <!-- Controles eye-tracking compactos -->
+  <div id="eye-tracking-controls">
+    <div id="eye-toggle-btn" aria-label="Controles de seguimiento ocular">
+      <i class="fas fa-eye"></i>
+    </div>
+    
+    <div id="tracking-panel">
+      <button id="btnStartTracking" class="tracking-btn" aria-label="Iniciar seguimiento ocular">
+        <i class="fas fa-play"></i> Iniciar seguimiento
+      </button>
+      <button id="btnCalibrate" class="tracking-btn" aria-label="Calibrar seguimiento ocular">
+        <i class="fas fa-crosshairs"></i> Calibrar
+      </button>
+      <button id="btnStopTracking" class="tracking-btn" aria-label="Detener seguimiento ocular">
+        <i class="fas fa-stop"></i> Detener seguimiento
+      </button>
+      
+      <div id="heatmap-intensity">
+        <div class="intensity-control">
+          <label for="radiusSlider">Tamaño:</label>
+          <input type="range" id="radiusSlider" min="10" max="80" value="40">
+        </div>
+        <div class="intensity-control">
+          <label for="opacitySlider">Opacidad:</label>
+          <input type="range" id="opacitySlider" min="1" max="100" value="60">
+        </div>
+      </div>
+      
+      <div id="calibration-status">Calibración: No iniciada</div>
+    </div>
   </div>
 
-  <!-- Video de calibración (oculto por defecto) -->
+  <!-- Video de calibración -->
   <div id="videoContainer">
-    <video id="webgazerVideoFeed" width="200" autoplay muted playsinline></video>
+    <video id="webgazerVideoFeed" width="180" autoplay muted playsinline></video>
   </div>
 
   <!-- Contenedor para el mapa de calor -->
@@ -295,17 +385,20 @@
     let calibrationStep = 0;
     const puntosMirada = [];
     let heatmap;
+    let lastGazeTime = 0;
     
     // Puntos de calibración
     const calibrationPoints = [
-      { x: window.innerWidth * 0.2, y: window.innerHeight * 0.2 },  // Superior izquierdo
-      { x: window.innerWidth * 0.8, y: window.innerHeight * 0.2 },  // Superior derecho
-      { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 },  // Centro
-      { x: window.innerWidth * 0.2, y: window.innerHeight * 0.8 },  // Inferior izquierdo
-      { x: window.innerWidth * 0.8, y: window.innerHeight * 0.8 }   // Inferior derecho
+      { x: window.innerWidth * 0.1, y: window.innerHeight * 0.1 },
+      { x: window.innerWidth * 0.9, y: window.innerHeight * 0.1 },
+      { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 },
+      { x: window.innerWidth * 0.1, y: window.innerHeight * 0.9 },
+      { x: window.innerWidth * 0.9, y: window.innerHeight * 0.9 }
     ];
     
     // Elementos DOM
+    const eyeToggleBtn = document.getElementById('eye-toggle-btn');
+    const trackingPanel = document.getElementById('tracking-panel');
     const startBtn = document.getElementById('btnStartTracking');
     const stopBtn = document.getElementById('btnStopTracking');
     const calibrateBtn = document.getElementById('btnCalibrate');
@@ -313,22 +406,42 @@
     const calibrationPoint = document.getElementById('calibration-point');
     const videoContainer = document.getElementById('videoContainer');
     const videoFeed = document.getElementById('webgazerVideoFeed');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const opacitySlider = document.getElementById('opacitySlider');
     
     // Inicializar el heatmap
     function initHeatmap() {
       heatmap = h337.create({
         container: document.getElementById('heatmapContainer'),
-        radius: 40,
-        maxOpacity: 0.6,
-        minOpacity: 0.1,
-        blur: 0.9,
+        radius: parseInt(radiusSlider.value),
+        maxOpacity: parseInt(opacitySlider.value) / 100,
+        minOpacity: 0.05,
+        blur: 0.85,
         gradient: {
-          '.3': 'blue',
-          '.65': 'yellow',
-          '.8': 'orange',
-          '.95': 'red'
+          '0.1': '#2c7be5',
+          '0.5': '#00d97e',
+          '0.9': '#ffcc00',
+          '1.0': '#ff3d3d'
         }
       });
+    }
+    
+    // Actualizar configuración del heatmap
+    function updateHeatmapConfig() {
+      if (!heatmap) return;
+      
+      heatmap.configure({
+        radius: parseInt(radiusSlider.value),
+        maxOpacity: parseInt(opacitySlider.value) / 100
+      });
+      
+      // Volver a dibujar con la nueva configuración
+      if (puntosMirada.length > 0) {
+        heatmap.setData({
+          max: 5,
+          data: puntosMirada
+        });
+      }
     }
     
     // Iniciar seguimiento ocular
@@ -336,11 +449,22 @@
       if (tracking) return;
       
       tracking = true;
+      puntosMirada.length = 0; // Limpiar datos anteriores
+      
       webgazer.resume();
+      webgazer.showVideoPreview(true).showPredictionPoints(true);
       
       // Configurar el listener de la mirada
       webgazer.setGazeListener(function(data, elapsedTime) {
         if (!tracking || data === null || calibrating) return;
+        
+        // Filtrar datos no válidos
+        if (data.x < 0 || data.y < 0 || data.x > window.innerWidth || data.y > window.innerHeight) return;
+        
+        // Filtrar datos demasiado frecuentes
+        const now = Date.now();
+        if (now - lastGazeTime < 50) return;
+        lastGazeTime = now;
         
         // Agregar punto de mirada al heatmap
         puntosMirada.push({x: data.x, y: data.y, value: 1});
@@ -353,19 +477,24 @@
       
       // Mostrar vista previa de la cámara
       videoContainer.style.display = 'block';
-      webgazer.showVideoPreview(true).showPredictionPoints(true);
+      
+      calibrationStatus.textContent = 'Seguimiento activo';
     }
     
     // Detener seguimiento ocular
     function stopTracking() {
+      if (!tracking) return;
+      
       tracking = false;
       webgazer.pause();
       
       // Actualizar heatmap con todos los datos recolectados
-      heatmap.setData({
-        max: 5,
-        data: puntosMirada
-      });
+      if (puntosMirada.length > 0) {
+        heatmap.setData({
+          max: 5,
+          data: puntosMirada
+        });
+      }
       
       startBtn.disabled = false;
       stopBtn.disabled = true;
@@ -373,6 +502,8 @@
       
       // Ocultar vista previa
       videoContainer.style.display = 'none';
+      
+      calibrationStatus.textContent = 'Seguimiento detenido';
     }
     
     // Iniciar calibración
@@ -419,11 +550,20 @@
     function finishCalibration() {
       calibrating = false;
       document.body.classList.remove('calibration-active');
-      calibrationStatus.textContent = 'Calibración: Completada';
+      calibrationStatus.textContent = 'Calibración completada';
       
       // Restaurar listener de mirada
       webgazer.setGazeListener(function(data, elapsedTime) {
         if (!tracking || data === null || calibrating) return;
+        
+        // Filtrar datos no válidos
+        if (data.x < 0 || data.y < 0 || data.x > window.innerWidth || data.y > window.innerHeight) return;
+        
+        // Filtrar datos demasiado frecuentes
+        const now = Date.now();
+        if (now - lastGazeTime < 50) return;
+        lastGazeTime = now;
+        
         puntosMirada.push({x: data.x, y: data.y, value: 1});
         heatmap.addData({x: data.x, y: data.y, value: 1});
       });
@@ -446,13 +586,31 @@
       window.saveDataAcrossSessions = false;
       
       // Event listeners para botones
+      eyeToggleBtn.addEventListener('click', function(e) {
+        trackingPanel.style.display = trackingPanel.style.display === 'block' ? 'none' : 'block';
+        e.stopPropagation();
+      });
+      
+      document.addEventListener('click', function(e) {
+        if (!trackingPanel.contains(e.target) && !eyeToggleBtn.contains(e.target)) {
+          trackingPanel.style.display = 'none';
+        }
+      });
+      
       startBtn.addEventListener('click', startTracking);
       stopBtn.addEventListener('click', stopTracking);
       calibrateBtn.addEventListener('click', startCalibration);
       
+      // Event listeners para controles deslizantes
+      radiusSlider.addEventListener('input', updateHeatmapConfig);
+      opacitySlider.addEventListener('input', updateHeatmapConfig);
+      
       // Deshabilitar botones inicialmente
       stopBtn.disabled = true;
       calibrateBtn.disabled = true;
+      
+      // Mensaje inicial
+      calibrationStatus.textContent = 'Presione "Iniciar seguimiento" para comenzar';
     });
   </script>
 </body>
