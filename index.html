@@ -92,7 +92,7 @@
       max-width: 100%;
     }
 
-    /* Controles eye-tracking */
+    /* Controles eye-tracking - CORREGIDOS */
     #eye-tracking-controls {
       position: fixed;
       bottom: 20px;
@@ -111,6 +111,7 @@
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       transition: all 0.3s;
+      z-index: 1002;
     }
     
     #eye-toggle-btn:hover {
@@ -131,7 +132,8 @@
       padding: 15px;
       width: 220px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      display: none; /* Oculto inicialmente */
+      display: none;
+      z-index: 1001;
     }
     
     .tracking-btn {
@@ -252,6 +254,21 @@
       pointer-events: none;
       display: none;
     }
+    
+    /* Notificación */
+    .notification {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-principal);
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 1003;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -269,7 +286,7 @@
     <section class="container my-5" aria-label="Acerca de mí">
       <div class="row align-items-center g-4">
         <div class="col-md-6">
-          <img src="https://via.placeholder.com/500x300?text=Imagen+de+Matheo" alt="Tarjeta personalizada de Matheo Santillan" class="img-fluid shadow" />
+          <img src="https://images.unsplash.com/photo-1536104968055-4d61aa56f46a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Desarrollador de software trabajando" class="img-fluid shadow" />
         </div>
         <div class="col-md-6">
           <div class="card p-4 h-100 shadow" role="region" aria-label="Perfil personal">
@@ -292,19 +309,19 @@
       <div class="row g-4">
         <div class="col-md-4">
           <div class="card p-3 h-100 shadow">
-            <h3>Desarrollo orientado a objetos</h3>
+            <h3><i class="fas fa-cube me-2"></i>Desarrollo orientado a objetos</h3>
             <p>Código modular, reutilizable y fácil de mantener.</p>
           </div>
         </div>
         <div class="col-md-4">
           <div class="card p-3 h-100 shadow">
-            <h3>Lógica de programación</h3>
+            <h3><i class="fas fa-brain me-2"></i>Lógica de programación</h3>
             <p>Resolver problemas con pensamiento estructurado y algoritmos eficientes.</p>
           </div>
         </div>
         <div class="col-md-4">
           <div class="card p-3 h-100 shadow">
-            <h3>Colaboración en equipo</h3>
+            <h3><i class="fas fa-users me-2"></i>Colaboración en equipo</h3>
             <p>Trabajo conjunto con metodologías ágiles y comunicación efectiva.</p>
           </div>
         </div>
@@ -318,7 +335,7 @@
       <div class="row g-4">
         <div class="col-md-4">
           <div class="card p-3 h-100" role="region" aria-label="Proyecto Asistente Virtual">
-            <h3>Asistente Virtual</h3>
+            <h3><i class="fas fa-robot me-2"></i>Asistente Virtual</h3>
             <p>
               Diseñado para ayudar a personas con discapacidad visual. Usa DialogFlow, Speech API y Python.
             </p>
@@ -327,7 +344,7 @@
         </div>
         <div class="col-md-4">
           <div class="card p-3 h-100" role="region" aria-label="Proyecto Aplicación Educativa">
-            <h3>Aplicación Educativa</h3>
+            <h3><i class="fas fa-graduation-cap me-2"></i>Aplicación Educativa</h3>
             <p>
               App para niños con contenidos en 3D, interacción táctil y personajes animados. Hecho en Unity.
             </p>
@@ -336,7 +353,7 @@
         </div>
         <div class="col-md-4">
           <div class="card p-3 h-100" role="region" aria-label="Proyecto Sistema de Control">
-            <h3>Sistema de Control</h3>
+            <h3><i class="fas fa-home me-2"></i>Sistema de Control</h3>
             <p>
               Plataforma IoT para manejar luces y sensores desde el móvil. Backend con Firebase y Node.js.
             </p>
@@ -397,6 +414,11 @@
   
   <!-- Punto de seguimiento visual -->
   <div class="gaze-dot" id="gazeDot"></div>
+  
+  <!-- Notificación -->
+  <div class="notification" id="notification">
+    <i class="fas fa-info-circle me-2"></i> <span id="notification-text"></span>
+  </div>
 
   <!-- Librerías necesarias -->
   <!-- Webgazer.js para el seguimiento ocular -->
@@ -437,6 +459,17 @@
     const heatmapContainer = document.getElementById('heatmapContainer');
     const radiusSlider = document.getElementById('radiusSlider');
     const opacitySlider = document.getElementById('opacitySlider');
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notification-text');
+    
+    // Función para mostrar notificaciones
+    function showNotification(message, duration = 3000) {
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
     
     // Inicializar el mapa de calor
     function initHeatmap() {
@@ -522,6 +555,9 @@
       
       // Actualizar mensaje de estado
       calibrationStatus.textContent = 'Seguimiento activo - Mira alrededor';
+      
+      // Notificación
+      showNotification('Seguimiento ocular iniciado!');
     }
     
     // Detener seguimiento ocular
@@ -556,6 +592,9 @@
       
       // Actualizar mensaje de estado
       calibrationStatus.textContent = 'Seguimiento detenido - Mapa de calor visible';
+      
+      // Notificación
+      showNotification('Mapa de calor generado!');
     }
     
     // Iniciar proceso de calibración
@@ -637,6 +676,9 @@
         puntosMirada.push({x: data.x, y: data.y, value: 1});
         heatmap.addData({x: data.x, y: data.y, value: 1});
       });
+      
+      // Notificación
+      showNotification('Calibración completada con éxito!');
     }
     
     // Inicializar todo al cargar la página
@@ -657,9 +699,7 @@
       // Configurar para no guardar datos entre sesiones
       window.saveDataAcrossSessions = false;
       
-      // Configurar eventos para los controles
-      
-      // Botón para mostrar/ocultar panel de controles (CORREGIDO)
+      // CORRECCIÓN: Evento para mostrar/ocultar el panel de controles
       eyeToggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         if (trackingPanel.style.display === 'block') {
@@ -695,9 +735,6 @@
       
       // Mensaje inicial
       calibrationStatus.textContent = 'Presione "Iniciar seguimiento" para comenzar';
-      
-      // Mensaje de consola para verificar que todo está listo
-      console.log("Sistema de eye-tracking inicializado correctamente");
     });
   </script>
 </body>
