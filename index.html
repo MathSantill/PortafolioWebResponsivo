@@ -178,6 +178,7 @@
       height: 100vh;
       pointer-events: none;
       z-index: 1000;
+      display: none;
     }
     
     #calibration-point {
@@ -231,6 +232,18 @@
     .intensity-control input {
       flex: 1;
     }
+    
+    .gaze-dot {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #00ff00;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      pointer-events: none;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -248,7 +261,7 @@
     <section class="container my-5" aria-label="Acerca de mí">
       <div class="row align-items-center g-4">
         <div class="col-md-6">
-          <img src="img/TarjetadePersonajeFicticio.png" alt="Tarjeta personalizada de Matheo Santillan" class="img-fluid shadow" />
+          <img src="https://via.placeholder.com/500x300?text=Imagen+de+Matheo" alt="Tarjeta personalizada de Matheo Santillan" class="img-fluid shadow" />
         </div>
         <div class="col-md-6">
           <div class="card p-4 h-100 shadow" role="region" aria-label="Perfil personal">
@@ -373,6 +386,9 @@
   
   <!-- Punto de calibración -->
   <div id="calibration-point"></div>
+  
+  <!-- Punto de seguimiento visual -->
+  <div class="gaze-dot" id="gazeDot"></div>
 
   <!-- Scripts necesarios -->
   <script src="https://webgazer.cs.brown.edu/webgazer.js" type="text/javascript"></script>
@@ -405,14 +421,15 @@
     const calibrationStatus = document.getElementById('calibration-status');
     const calibrationPoint = document.getElementById('calibration-point');
     const videoContainer = document.getElementById('videoContainer');
-    const videoFeed = document.getElementById('webgazerVideoFeed');
+    const gazeDot = document.getElementById('gazeDot');
+    const heatmapContainer = document.getElementById('heatmapContainer');
     const radiusSlider = document.getElementById('radiusSlider');
     const opacitySlider = document.getElementById('opacitySlider');
     
     // Inicializar el heatmap
     function initHeatmap() {
       heatmap = h337.create({
-        container: document.getElementById('heatmapContainer'),
+        container: heatmapContainer,
         radius: parseInt(radiusSlider.value),
         maxOpacity: parseInt(opacitySlider.value) / 100,
         minOpacity: 0.05,
@@ -451,6 +468,10 @@
       tracking = true;
       puntosMirada.length = 0; // Limpiar datos anteriores
       
+      // Mostrar el punto de seguimiento visual
+      gazeDot.style.display = 'block';
+      
+      // Iniciar WebGazer
       webgazer.resume();
       webgazer.showVideoPreview(true).showPredictionPoints(true);
       
@@ -465,6 +486,10 @@
         const now = Date.now();
         if (now - lastGazeTime < 50) return;
         lastGazeTime = now;
+        
+        // Actualizar posición del punto visual
+        gazeDot.style.left = data.x + 'px';
+        gazeDot.style.top = data.y + 'px';
         
         // Agregar punto de mirada al heatmap
         puntosMirada.push({x: data.x, y: data.y, value: 1});
@@ -488,12 +513,18 @@
       tracking = false;
       webgazer.pause();
       
+      // Ocultar punto visual
+      gazeDot.style.display = 'none';
+      
       // Actualizar heatmap con todos los datos recolectados
       if (puntosMirada.length > 0) {
         heatmap.setData({
           max: 5,
           data: puntosMirada
         });
+        
+        // Mostrar el mapa de calor
+        heatmapContainer.style.display = 'block';
       }
       
       startBtn.disabled = false;
@@ -503,7 +534,7 @@
       // Ocultar vista previa
       videoContainer.style.display = 'none';
       
-      calibrationStatus.textContent = 'Seguimiento detenido';
+      calibrationStatus.textContent = 'Seguimiento detenido. Mapa de calor visible.';
     }
     
     // Iniciar calibración
@@ -528,21 +559,21 @@
       calibrationPoint.style.top = (point.y - 10) + 'px';
       calibrationPoint.style.display = 'block';
       
-      calibrationStatus.textContent = `Calibración: Paso ${calibrationStep + 1} de ${calibrationPoints.length}`;
+      calibrationStatus.textContent = `Calibración: Paso ${calibrationStep + 1} de ${calibrationPoints.length} - Mire al punto naranja`;
       
       // Esperar a que el usuario mire al punto
       setTimeout(() => {
-        webgazer.setRegression('ridge')
-          .setTracker('clmtrackr')
-          .setGazeListener(function(data, elapsedTime) {
-            if (data) {
-              // Registrar el punto de calibración
-              webgazer.addCalibrationPoint(point.x, point.y);
-              calibrationStep++;
-              calibrationPoint.style.display = 'none';
-              showNextCalibrationPoint();
-            }
-          });
+        // Registrar el punto de calibración
+        webgazer.addCalibrationPoint(point.x, point.y);
+        
+        // Ocultar el punto
+        calibrationPoint.style.display = 'none';
+        
+        // Avanzar al siguiente paso
+        calibrationStep++;
+        
+        // Mostrar el siguiente punto
+        setTimeout(showNextCalibrationPoint, 300);
       }, 2000);
     }
     
@@ -550,7 +581,7 @@
     function finishCalibration() {
       calibrating = false;
       document.body.classList.remove('calibration-active');
-      calibrationStatus.textContent = 'Calibración completada';
+      calibrationStatus.textContent = 'Calibración completada! Seguimiento más preciso.';
       
       // Restaurar listener de mirada
       webgazer.setGazeListener(function(data, elapsedTime) {
@@ -563,6 +594,10 @@
         const now = Date.now();
         if (now - lastGazeTime < 50) return;
         lastGazeTime = now;
+        
+        // Actualizar punto visual
+        gazeDot.style.left = data.x + 'px';
+        gazeDot.style.top = data.y + 'px';
         
         puntosMirada.push({x: data.x, y: data.y, value: 1});
         heatmap.addData({x: data.x, y: data.y, value: 1});
