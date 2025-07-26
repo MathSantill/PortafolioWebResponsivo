@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matheo Santillan - Portafolio Accesible con Eye-Tracking</title>
+  <title>Matheo Santillan - Portafolio Accesible</title>
   
-  <!-- Paso 1: Incluir Bootstrap para estilos base -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   
-  <!-- Paso 2: Incluir Font Awesome para iconos -->
+  <!-- Font Awesome para iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* Paso 3: Definir variables de color y estilos base */
     :root {
       --color-principal: #f97316;
       --color-principal-hover: #ea580c;
@@ -30,7 +29,6 @@
       padding: 0;
     }
 
-    /* Paso 4: Estilos para secciones principales */
     header, main, footer {
       width: 100%;
     }
@@ -94,7 +92,7 @@
       max-width: 100%;
     }
 
-    /* Paso 5: Estilos para controles de eye-tracking */
+    /* Controles eye-tracking */
     #eye-tracking-controls {
       position: fixed;
       bottom: 20px;
@@ -133,7 +131,7 @@
       padding: 15px;
       width: 220px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      display: none;
+      display: none; /* Oculto inicialmente */
     }
     
     .tracking-btn {
@@ -257,7 +255,7 @@
   </style>
 </head>
 <body>
-  <!-- Paso 6: Encabezado del portafolio -->
+  <!-- Encabezado -->
   <header role="banner">
     <h2>Hola, soy</h2>
     <h1><span class="highlight">Matheo Santillan</span><br>Desarrollador de Software</h1>
@@ -265,7 +263,7 @@
     <a href="#" class="btn btn-custom mt-3" role="button" aria-label="Descargar mi currículum en PDF">Descargar CV</a>
   </header>
 
-  <!-- Paso 7: Contenido principal del portafolio -->
+  <!-- Contenido principal -->
   <main role="main" tabindex="-1">
     <!-- Sección: Acerca de mí -->
     <section class="container my-5" aria-label="Acerca de mí">
@@ -349,12 +347,12 @@
     </section>
   </main>
 
-  <!-- Paso 8: Pie de página -->
+  <!-- Pie de página -->
   <footer role="contentinfo">
     <p>© 2025 Matheo Santillan — <a href="mailto:matheo.santillan@uisek.edu.ec">matheo.santillan@uisek.edu.ec</a></p>
   </footer>
 
-  <!-- Paso 9: Controles para eye-tracking -->
+  <!-- Controles eye-tracking -->
   <div id="eye-tracking-controls">
     <div id="eye-toggle-btn" aria-label="Controles de seguimiento ocular">
       <i class="fas fa-eye"></i>
@@ -386,30 +384,30 @@
     </div>
   </div>
 
-  <!-- Paso 10: Video para la cámara de seguimiento -->
+  <!-- Video para la cámara de seguimiento -->
   <div id="videoContainer">
     <video id="webgazerVideoFeed" width="180" autoplay muted playsinline></video>
   </div>
 
-  <!-- Paso 11: Contenedor para el mapa de calor -->
+  <!-- Contenedor para el mapa de calor -->
   <div id="heatmapContainer"></div>
   
-  <!-- Paso 12: Punto de calibración -->
+  <!-- Punto de calibración -->
   <div id="calibration-point"></div>
   
-  <!-- Paso 13: Punto de seguimiento visual -->
+  <!-- Punto de seguimiento visual -->
   <div class="gaze-dot" id="gazeDot"></div>
 
-  <!-- Paso 14: Incluir librerías necesarias -->
+  <!-- Librerías necesarias -->
   <!-- Webgazer.js para el seguimiento ocular -->
   <script src="https://webgazer.cs.brown.edu/webgazer.js?ver=1.3.0" type="text/javascript"></script>
   
   <!-- Heatmap.js para la visualización de datos -->
   <script src="https://cdn.jsdelivr.net/npm/heatmapjs@2.0.5/heatmap.min.js"></script>
 
-  <!-- Paso 15: Implementar la lógica de eye-tracking -->
+  <!-- Implementación de la lógica de eye-tracking -->
   <script>
-    // Paso 16: Variables globales para el seguimiento
+    // Variables globales para el seguimiento
     let tracking = false;
     let calibrating = false;
     let calibrationStep = 0;
@@ -417,7 +415,7 @@
     let heatmap;
     let lastGazeTime = 0;
     
-    // Paso 17: Puntos de calibración (5 puntos estratégicos en la pantalla)
+    // Puntos de calibración (5 puntos estratégicos en la pantalla)
     const calibrationPoints = [
       { x: window.innerWidth * 0.1, y: window.innerHeight * 0.1 },  // Superior izquierdo
       { x: window.innerWidth * 0.9, y: window.innerHeight * 0.1 },  // Superior derecho
@@ -426,7 +424,7 @@
       { x: window.innerWidth * 0.9, y: window.innerHeight * 0.9 }   // Inferior derecho
     ];
     
-    // Paso 18: Referencias a elementos del DOM
+    // Referencias a elementos del DOM
     const eyeToggleBtn = document.getElementById('eye-toggle-btn');
     const trackingPanel = document.getElementById('tracking-panel');
     const startBtn = document.getElementById('btnStartTracking');
@@ -440,7 +438,7 @@
     const radiusSlider = document.getElementById('radiusSlider');
     const opacitySlider = document.getElementById('opacitySlider');
     
-    // Paso 19: Inicializar el mapa de calor
+    // Inicializar el mapa de calor
     function initHeatmap() {
       heatmap = h337.create({
         container: heatmapContainer,
@@ -457,7 +455,7 @@
       });
     }
     
-    // Paso 20: Actualizar configuración del mapa de calor
+    // Actualizar configuración del mapa de calor
     function updateHeatmapConfig() {
       if (!heatmap) return;
       
@@ -475,7 +473,7 @@
       }
     }
     
-    // Paso 21: Iniciar seguimiento ocular
+    // Iniciar seguimiento ocular
     function startTracking() {
       if (tracking) return;
       
@@ -526,7 +524,7 @@
       calibrationStatus.textContent = 'Seguimiento activo - Mira alrededor';
     }
     
-    // Paso 22: Detener seguimiento ocular
+    // Detener seguimiento ocular
     function stopTracking() {
       if (!tracking) return;
       
@@ -560,7 +558,7 @@
       calibrationStatus.textContent = 'Seguimiento detenido - Mapa de calor visible';
     }
     
-    // Paso 23: Iniciar proceso de calibración
+    // Iniciar proceso de calibración
     function startCalibration() {
       if (!tracking || calibrating) return;
       
@@ -574,7 +572,7 @@
       showNextCalibrationPoint();
     }
     
-    // Paso 24: Mostrar siguiente punto de calibración
+    // Mostrar siguiente punto de calibración
     function showNextCalibrationPoint() {
       // Verificar si hemos terminado
       if (calibrationStep >= calibrationPoints.length) {
@@ -609,7 +607,7 @@
       }, 2000);
     }
     
-    // Paso 25: Finalizar calibración
+    // Finalizar calibración
     function finishCalibration() {
       calibrating = false;
       
@@ -641,7 +639,7 @@
       });
     }
     
-    // Paso 26: Inicializar todo al cargar la página
+    // Inicializar todo al cargar la página
     window.addEventListener('load', function() {
       // Inicializar mapa de calor
       initHeatmap();
@@ -659,15 +657,19 @@
       // Configurar para no guardar datos entre sesiones
       window.saveDataAcrossSessions = false;
       
-      // Paso 27: Configurar eventos para los controles
+      // Configurar eventos para los controles
       
-      // Botón para mostrar/ocultar panel de controles
+      // Botón para mostrar/ocultar panel de controles (CORREGIDO)
       eyeToggleBtn.addEventListener('click', function(e) {
-        trackingPanel.style.display = trackingPanel.style.display === 'block' ? 'none' : 'block';
         e.stopPropagation();
+        if (trackingPanel.style.display === 'block') {
+          trackingPanel.style.display = 'none';
+        } else {
+          trackingPanel.style.display = 'block';
+        }
       });
       
-      // Ocultar panel al hacer clic fuera
+      // Ocultar panel al hacer clic fuera de él
       document.addEventListener('click', function(e) {
         if (!trackingPanel.contains(e.target) && !eyeToggleBtn.contains(e.target)) {
           trackingPanel.style.display = 'none';
@@ -693,6 +695,9 @@
       
       // Mensaje inicial
       calibrationStatus.textContent = 'Presione "Iniciar seguimiento" para comenzar';
+      
+      // Mensaje de consola para verificar que todo está listo
+      console.log("Sistema de eye-tracking inicializado correctamente");
     });
   </script>
 </body>
