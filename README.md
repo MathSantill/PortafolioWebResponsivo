@@ -10,7 +10,7 @@ Este es mi portafolio web desarrollado para el Laboratorio 7 de la asignatura - 
 - [Prototipo en Figma](https://www.figma.com/design/hWVaEGAX6DmcF0Tq5oufGu/portafolio?node-id=0-1&p=f&t=GvI87Cyorm1kmRFO-0)
 
 - [Sitio en GitHub Pages](https://mathsantill.github.io/PortafolioWebResponsivo/)
-- [Builde.io] with cam (https://builder.io/app/projects/1a2a9d6db20f43abb1e6a3bd1f3d6c09/main)
+- [Builde.io](https://builder.io/app/projects/1a2a9d6db20f43abb1e6a3bd1f3d6c09/main)
   
 
 ### Mejoras realizadas:
