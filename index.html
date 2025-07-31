@@ -1,14 +1,925 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello world project</title>
-  </head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matheo Santillan - Portafolio Accesible</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --color-principal: #f97316;
+      --color-principal-hover: #ea580c;
+      --control-bg: rgba(25, 25, 35, 0.95);
+    }
 
-  <body>
-    <div id="root"></div>
+    body {
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: #e5e5e5;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
 
-    <script type="module" src="/client/App.tsx"></script>
-  </body>
+    header, main, footer {
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+    }
+
+    .highlight {
+      color: var(--color-principal);
+    }
+
+    .btn-custom {
+      background-color: var(--color-principal);
+      color: black;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .btn-custom:hover,
+    .btn-outline-light:hover {
+      background-color: var(--color-principal-hover);
+      color: white;
+    }
+
+    .btn:focus, a:focus {
+      outline: 3px solid var(--color-principal);
+      outline-offset: 2px;
+    }
+
+    .card {
+      background-color: #111827;
+      border: none;
+      color: white;
+      border-radius: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    footer {
+      background-color: #0f0f0f;
+      color: #999;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    a {
+      color: var(--color-principal);
+    }
+
+    .img-fluid {
+      border-radius: 10px;
+      max-width: 100%;
+    }
+
+    /* Controles eye-tracking - CORREGIDOS */
+    #eye-tracking-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+    
+    #eye-toggle-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--color-principal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s;
+      z-index: 1002;
+    }
+    
+    #eye-toggle-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    #eye-toggle-btn i {
+      font-size: 24px;
+      color: black;
+    }
+    
+    #tracking-panel {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      background: var(--control-bg);
+      border: 1px solid var(--color-principal);
+      border-radius: 10px;
+      padding: 15px;
+      width: 220px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 1001;
+    }
+    
+    .tracking-btn {
+      padding: 8px 12px;
+      background: #333348;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    
+    .tracking-btn i {
+      margin-right: 8px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .tracking-btn:hover {
+      background: #3d3d5a;
+    }
+    
+    #btnStopTracking {
+      background: #d14343;
+    }
+    
+    #btnStopTracking:hover {
+      background: #b52e2e;
+    }
+    
+    #calibration-status {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      padding: 8px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    
+    #heatmapContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+    }
+    
+    #calibration-point {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      background: var(--color-principal);
+      border: 3px solid white;
+      border-radius: 50%;
+      z-index: 1002;
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.9), 0 0 50px rgba(249, 115, 22, 0.5);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .calibration-active {
+      cursor: none !important;
+    }
+    
+    #videoContainer {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 180px;
+      z-index: 1001;
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    
+    #videoContainer video {
+      width: 100%;
+    }
+    
+    #heatmap-intensity {
+      margin-top: 10px;
+    }
+    
+    .intensity-control {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .intensity-control label {
+      font-size: 12px;
+      width: 100px;
+    }
+    
+    .intensity-control input {
+      flex: 1;
+    }
+    
+    .gaze-dot {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: #00ff00;
+      border: 2px solid white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    }
+    
+    /* Notificación */
+    .notification {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-principal);
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 1003;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Encabezado -->
+  <header role="banner">
+    <h2>Hola, soy</h2>
+    <h1><span class="highlight">Matheo Santillan</span><br>Desarrollador de Software</h1>
+    <p class="mt-3">Este es mi portafolio y CV. Aquí puedes ver ejemplos de mis proyectos y experiencia.</p>
+    <a href="#" class="btn btn-custom mt-3" role="button" aria-label="Descargar mi currículum en PDF">Descargar CV</a>
+  </header>
+
+  <!-- Contenido principal -->
+  <main role="main" tabindex="-1">
+    <!-- Sección: Acerca de mí -->
+    <section class="container my-5" aria-label="Acerca de mí">
+      <div class="row align-items-center g-4">
+        <div class="col-md-6">
+          <img src="https://cdn.builder.io/api/v1/image/assets%2Feb946005173f46ecaca6960caf83b7de%2Fd0021c76aa0c40f4b6389f1623ca7b58?format=webp&width=800" alt="Tarjeta personalizada de Matheo Santillan" class="img-fluid shadow" />        </div>
+        <div class="col-md-6">
+          <div class="card p-4 h-100 shadow" role="region" aria-label="Perfil personal">
+            <h2 class="highlight mb-3">Acerca de mí</h2>
+            <p>
+              Soy una persona comprometida con el aprendizaje y con una fuerte motivación por entender cómo funcionan las cosas a nivel técnico. Me considero analítico, detallista y con una curiosidad constante por explorar nuevas ideas.
+            </p>
+            <p>
+              Actualmente me encuentro en formación dentro del área del desarrollo de software, donde combino estudios teóricos con ejercicios prácticos relacionados con programación, inteligencia artificial y resolución de problemas computacionales.
+            </p>
+            <a href="#" class="btn btn-outline-light mt-3" role="button" aria-label="Leer más sobre mí">Más acerca de mí</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección: Habilidades -->
+    <section class="container my-5 text-center" aria-label="Habilidades">
+      <h2 class="highlight mb-4">Mis habilidades</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow">
+            <h3><i class="fas fa-cube me-2"></i>Desarrollo orientado a objetos</h3>
+            <p>Código modular, reutilizable y fácil de mantener.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow">
+            <h3><i class="fas fa-brain me-2"></i>Lógica de programación</h3>
+            <p>Resolver problemas con pensamiento estructurado y algoritmos eficientes.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow">
+            <h3><i class="fas fa-users me-2"></i>Colaboración en equipo</h3>
+            <p>Trabajo conjunto con metodologías ágiles y comunicación efectiva.</p>
+          </div>
+        </div>
+      </div>
+      <a href="#proyectos" class="btn btn-custom mt-4" role="button" aria-label="Ver más habilidades">Ver más de mis skills →</a>
+    </section>
+
+    <!-- Sección: Proyectos -->
+    <section id="proyectos" class="container my-5" aria-label="Proyectos realizados">
+      <h2 class="highlight text-center mb-4">Mis Proyectos</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-3 h-100" role="region" aria-label="Proyecto Asistente Virtual">
+            <h3><i class="fas fa-robot me-2"></i>Asistente Virtual</h3>
+            <p>
+              Diseñado para ayudar a personas con discapacidad visual. Usa DialogFlow, Speech API y Python.
+            </p>
+            <a href="#" class="btn btn-outline-light w-100" role="button" aria-label="Más detalles del Asistente Virtual">Ver más detalles</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100" role="region" aria-label="Proyecto Aplicación Educativa">
+            <h3><i class="fas fa-graduation-cap me-2"></i>Aplicación Educativa</h3>
+            <p>
+              App para niños con contenidos en 3D, interacción táctil y personajes animados. Hecho en Unity.
+            </p>
+            <a href="#" class="btn btn-outline-light w-100" role="button" aria-label="Más detalles de la Aplicación Educativa">Ver más detalles</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100" role="region" aria-label="Proyecto Sistema de Control">
+            <h3><i class="fas fa-home me-2"></i>Sistema de Control</h3>
+            <p>
+              Plataforma IoT para manejar luces y sensores desde el móvil. Backend con Firebase y Node.js.
+            </p>
+            <a href="#" class="btn btn-outline-light w-100" role="button" aria-label="Más detalles del Sistema de Control">Ver más detalles</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de página -->
+  <footer role="contentinfo">
+    <p>© 2025 Matheo Santillan — <a href="mailto:matheo.santillan@uisek.edu.ec">matheo.santillan@uisek.edu.ec</a></p>
+  </footer>
+
+  <!-- Controles eye-tracking -->
+  <div id="eye-tracking-controls">
+    <div id="eye-toggle-btn" aria-label="Controles de seguimiento ocular" onclick="window.toggleEyeTrackingPanel()" style="cursor: pointer;">
+      <i class="fas fa-eye"></i>
+    </div>
+    
+    <div id="tracking-panel">
+      <button id="btnStartTracking" class="tracking-btn" aria-label="Iniciar seguimiento ocular">
+        <i class="fas fa-play"></i> Iniciar seguimiento
+      </button>
+      <button id="btnCalibrate" class="tracking-btn" aria-label="Calibrar seguimiento ocular">
+        <i class="fas fa-crosshairs"></i> Calibrar
+      </button>
+      <button id="btnStopTracking" class="tracking-btn" aria-label="Detener seguimiento ocular">
+        <i class="fas fa-stop"></i> Detener seguimiento
+      </button>
+
+      <button id="btnVerifyLab8" class="tracking-btn" aria-label="Verificar laboratorio 8" style="background: #28a745;">
+        <i class="fas fa-check"></i> Verificar Lab 8
+      </button>
+
+      <div id="heatmap-intensity">
+        <div class="intensity-control">
+          <label for="radiusSlider">Tamaño:</label>
+          <input type="range" id="radiusSlider" min="10" max="80" value="40">
+        </div>
+        <div class="intensity-control">
+          <label for="opacitySlider">Opacidad:</label>
+          <input type="range" id="opacitySlider" min="1" max="100" value="60">
+        </div>
+      </div>
+      
+      <div id="calibration-status">Presione "Iniciar seguimiento" para comenzar</div>
+    </div>
+  </div>
+
+  <!-- Video para la cámara de seguimiento -->
+  <div id="videoContainer">
+    <video id="webgazerVideoFeed" width="180" autoplay muted playsinline></video>
+  </div>
+
+  <!-- Contenedor para el mapa de calor -->
+  <div id="heatmapContainer"></div>
+  
+  <!-- Punto de calibración -->
+  <div id="calibration-point"></div>
+  
+  <!-- Punto de seguimiento visual -->
+  <div class="gaze-dot" id="gazeDot"></div>
+  
+  <!-- Notificación -->
+  <div class="notification" id="notification">
+    <i class="fas fa-info-circle me-2"></i> <span id="notification-text"></span>
+  </div>
+
+  <!-- Librerías necesarias -->
+  <!-- Heatmap.js para la visualización de datos -->
+  <script src="https://cdn.jsdelivr.net/npm/heatmapjs@2.0.5/heatmap.min.js"></script>
+
+  <!-- Webgazer.js para el seguimiento ocular -->
+  <script src="https://webgazer.cs.brown.edu/webgazer.js?ver=1.3.0" type="text/javascript"></script>
+
+  <!-- Implementación de la lógica de eye-tracking -->
+  <script>
+    // Variables globales para el seguimiento
+    let tracking = false;
+    let calibrating = false;
+    let calibrationStep = 0;
+    const puntosMirada = [];
+    let heatmap;
+    let lastGazeTime = 0;
+    
+    // Puntos de calibración (5 puntos estratégicos en la pantalla)
+    const calibrationPoints = [
+      { x: window.innerWidth * 0.1, y: window.innerHeight * 0.1 },  // Superior izquierdo
+      { x: window.innerWidth * 0.9, y: window.innerHeight * 0.1 },  // Superior derecho
+      { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 },  // Centro
+      { x: window.innerWidth * 0.1, y: window.innerHeight * 0.9 },  // Inferior izquierdo
+      { x: window.innerWidth * 0.9, y: window.innerHeight * 0.9 }   // Inferior derecho
+    ];
+    
+    // Variables para referencias del DOM (se llenarán después de cargar)
+    let eyeToggleBtn, trackingPanel, startBtn, stopBtn, calibrateBtn;
+    let calibrationStatus, calibrationPoint, videoContainer, gazeDot;
+    let heatmapContainer, radiusSlider, opacitySlider, notification, notificationText;
+
+    // Función global para toggle del panel (disponible inmediatamente)
+    window.toggleEyeTrackingPanel = function() {
+      console.log('Toggle panel function called');
+      const panel = document.getElementById('tracking-panel');
+      const notif = document.getElementById('notification');
+      const notifText = document.getElementById('notification-text');
+
+      if (panel) {
+        const isVisible = panel.style.display === 'block';
+        panel.style.display = isVisible ? 'none' : 'block';
+        console.log('Panel ahora está:', panel.style.display);
+
+        // Mostrar notificación si los elementos están disponibles
+        if (notif && notifText) {
+          notifText.textContent = 'Panel ' + (isVisible ? 'cerrado' : 'abierto');
+          notif.style.display = 'block';
+          setTimeout(() => {
+            notif.style.display = 'none';
+          }, 3000);
+        }
+      } else {
+        console.error('Panel no encontrado');
+      }
+    };
+    
+    // Función para mostrar notificaciones
+    function showNotification(message, duration = 3000) {
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
+
+    // Función para verificar que todas las características del laboratorio 8 estén funcionando
+    function verificarLaboratorio8() {
+      console.log('=== VERIFICACIÓN LABORATORIO 8 ===');
+      console.log('✅ WebGazer.js disponible:', typeof webgazer !== 'undefined');
+      console.log('✅ Heatmap.js disponible:', typeof h337 !== 'undefined');
+      console.log('✅ Botón de eye-tracking presente:', eyeToggleBtn ? 'Sí' : 'No');
+      console.log('✅ Panel de controles presente:', trackingPanel ? 'Sí' : 'No');
+      console.log('✅ Botón iniciar seguimiento:', startBtn ? 'Sí' : 'No');
+      console.log('✅ Botón detener seguimiento:', stopBtn ? 'Sí' : 'No');
+      console.log('✅ Contenedor heatmap presente:', heatmapContainer ? 'Sí' : 'No');
+      console.log('✅ Mapa de calor inicializado:', heatmap ? 'Sí' : 'No');
+      console.log('===============================');
+      showNotification('Verificación completada - Ver consola para detalles');
+    }
+    
+    // Inicializar el mapa de calor
+    function initHeatmap() {
+      if (typeof h337 === 'undefined') {
+        console.error('h337 (heatmap.js) no está disponible');
+        showNotification('Error: Librería heatmap no cargada');
+        return false;
+      }
+
+      try {
+        heatmap = h337.create({
+          container: heatmapContainer,
+          radius: parseInt(radiusSlider.value),
+          maxOpacity: parseInt(opacitySlider.value) / 100,
+          minOpacity: 0.05,
+          blur: 0.85,
+          gradient: {
+            '0.1': '#2c7be5',   // Azul para baja intensidad
+            '0.5': '#00d97e',   // Verde para intensidad media
+            '0.9': '#ffcc00',   // Amarillo para alta intensidad
+            '1.0': '#ff3d3d'    // Rojo para máxima intensidad
+          }
+        });
+        return true;
+      } catch (error) {
+        console.error('Error al inicializar heatmap:', error);
+        showNotification('Error al inicializar mapa de calor');
+        return false;
+      }
+    }
+    
+    // Actualizar configuración del mapa de calor
+    function updateHeatmapConfig() {
+      if (!heatmap) return;
+      
+      heatmap.configure({
+        radius: parseInt(radiusSlider.value),
+        maxOpacity: parseInt(opacitySlider.value) / 100
+      });
+      
+      // Volver a dibujar con la nueva configuración
+      if (puntosMirada.length > 0) {
+        heatmap.setData({
+          max: 5,
+          data: puntosMirada
+        });
+      }
+    }
+    
+    // Iniciar seguimiento ocular
+    function startTracking() {
+      if (tracking) return;
+
+      if (!heatmap) {
+        showNotification('Error: Mapa de calor no inicializado');
+        return;
+      }
+
+      if (typeof webgazer === 'undefined') {
+        showNotification('Error: WebGazer no está disponible');
+        return;
+      }
+
+      // Reiniciar variables
+      tracking = true;
+      puntosMirada.length = 0;
+
+      // Mostrar el punto de seguimiento visual
+      gazeDot.style.display = 'block';
+
+      // Iniciar WebGazer
+      try {
+        webgazer.resume();
+        webgazer.showVideoPreview(true).showPredictionPoints(true);
+      
+      // Configurar el listener para recibir datos de la mirada
+      webgazer.setGazeListener(function(data, elapsedTime) {
+        // Verificar si el seguimiento está activo y los datos son válidos
+        if (!tracking || data === null || calibrating) return;
+        
+        // Filtrar datos fuera de la pantalla
+        if (data.x < 0 || data.y < 0 || data.x > window.innerWidth || data.y > window.innerHeight) return;
+        
+        // Limitar la frecuencia de muestreo (máximo 20 veces por segundo)
+        const now = Date.now();
+        if (now - lastGazeTime < 50) return;
+        lastGazeTime = now;
+        
+        // Actualizar posición del punto visual
+        gazeDot.style.left = data.x + 'px';
+        gazeDot.style.top = data.y + 'px';
+        
+        // Registrar punto de mirada para el mapa de calor
+        puntosMirada.push({x: data.x, y: data.y, value: 1});
+
+        // Actualizar mapa de calor en tiempo real
+        if (heatmap) {
+          heatmap.addData({x: data.x, y: data.y, value: 1});
+        }
+      }).begin();
+
+      // Actualizar estado de los botones
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      calibrateBtn.disabled = false;
+
+      // Mostrar vista previa de la cámara
+      videoContainer.style.display = 'block';
+
+      // Actualizar mensaje de estado
+      calibrationStatus.textContent = 'Seguimiento activo - Mira alrededor';
+
+      // Notificación
+      showNotification('Seguimiento ocular iniciado!');
+      } catch (error) {
+        console.error('Error al iniciar seguimiento:', error);
+        showNotification('Error al iniciar seguimiento ocular');
+        tracking = false;
+      }
+    }
+    
+    // Detener seguimiento ocular
+    function stopTracking() {
+      if (!tracking) {
+        showNotification('No hay seguimiento activo');
+        return;
+      }
+
+      console.log('Deteniendo seguimiento...', 'Puntos capturados:', puntosMirada.length);
+
+      // Detener WebGazer
+      tracking = false;
+      if (window.webgazer) {
+        webgazer.pause();
+      }
+
+      // Ocultar punto visual
+      if (gazeDot) {
+        gazeDot.style.display = 'none';
+      }
+
+      // Generar mapa de calor final
+      if (puntosMirada.length > 0 && heatmap) {
+        console.log('Generando mapa de calor con', puntosMirada.length, 'puntos');
+
+        heatmap.setData({
+          max: Math.max(5, puntosMirada.length / 10),
+          data: puntosMirada
+        });
+
+        // Mostrar el mapa de calor con estilo más visible
+        const heatmapContainer = document.getElementById('heatmapContainer');
+        if (heatmapContainer) {
+          heatmapContainer.style.display = 'block';
+          heatmapContainer.style.opacity = '0.8';
+          console.log('Mapa de calor mostrado');
+        }
+
+        showNotification(`Mapa de calor generado con ${puntosMirada.length} puntos!`);
+      } else {
+        showNotification('No hay datos suficientes para generar mapa de calor');
+        console.log('No hay datos para heatmap');
+      }
+
+      // Actualizar estado de los botones
+      if (startBtn) startBtn.disabled = false;
+      if (stopBtn) stopBtn.disabled = true;
+      if (calibrateBtn) calibrateBtn.disabled = true;
+
+      // Ocultar vista previa de la cámara
+      const videoContainer = document.getElementById('videoContainer');
+      if (videoContainer) {
+        videoContainer.style.display = 'none';
+      }
+
+      // Actualizar mensaje de estado
+      if (calibrationStatus) {
+        calibrationStatus.textContent = `Seguimiento detenido - ${puntosMirada.length} puntos capturados`;
+      }
+    }
+    
+    // Iniciar proceso de calibración
+    function startCalibration() {
+      if (!tracking) {
+        showNotification('Primero debe iniciar el seguimiento');
+        return;
+      }
+
+      if (calibrating) {
+        showNotification('Calibración ya en proceso');
+        return;
+      }
+
+      console.log('Iniciando calibración...');
+      calibrating = true;
+      calibrationStep = 0;
+
+      // Aplicar clase especial durante la calibración
+      document.body.classList.add('calibration-active');
+
+      // Obtener referencia actualizada al punto de calibración
+      calibrationPoint = document.getElementById('calibration-point');
+      if (!calibrationPoint) {
+        console.error('Elemento calibration-point no encontrado');
+        showNotification('Error: elemento de calibración no encontrado');
+        return;
+      }
+
+      showNotification('Iniciando calibración - Mire los puntos naranjas');
+
+      // Mostrar primer punto de calibración
+      showNextCalibrationPoint();
+    }
+    
+    // Mostrar siguiente punto de calibración
+    function showNextCalibrationPoint() {
+      // Verificar si hemos terminado
+      if (calibrationStep >= calibrationPoints.length) {
+        finishCalibration();
+        return;
+      }
+
+      // Obtener el punto actual
+      const point = calibrationPoints[calibrationStep];
+
+      console.log(`Mostrando punto de calibración ${calibrationStep + 1} en:`, point);
+
+      // Posicionar el punto de calibración
+      calibrationPoint.style.left = (point.x - 15) + 'px';
+      calibrationPoint.style.top = (point.y - 15) + 'px';
+      calibrationPoint.style.display = 'block';
+      console.log('Punto de calibración visible:', calibrationPoint.style.display);
+
+      // Actualizar estado
+      if (calibrationStatus) {
+        calibrationStatus.textContent = `Calibración: Paso ${calibrationStep + 1} de ${calibrationPoints.length} - Mire al punto naranja`;
+      }
+
+      // Mostrar notificación
+      showNotification(`Calibración ${calibrationStep + 1}/${calibrationPoints.length} - Mire al punto naranja`, 2000);
+
+      // Esperar 3 segundos para que el usuario mire al punto
+      setTimeout(() => {
+        if (window.webgazer) {
+          // Registrar el punto de calibración
+          webgazer.addCalibrationPoint(point.x, point.y);
+          console.log('Punto de calibración registrado en WebGazer');
+        }
+
+        // Ocultar el punto
+        calibrationPoint.style.display = 'none';
+
+        // Avanzar al siguiente punto
+        calibrationStep++;
+
+        // Mostrar siguiente punto después de una breve pausa
+        setTimeout(showNextCalibrationPoint, 500);
+      }, 3000);
+    }
+    
+    // Finalizar calibración
+    function finishCalibration() {
+      calibrating = false;
+      
+      // Remover clase especial
+      document.body.classList.remove('calibration-active');
+      
+      // Actualizar estado
+      calibrationStatus.textContent = 'Calibración completada! Seguimiento más preciso';
+      
+      // Restaurar el listener de mirada
+      webgazer.setGazeListener(function(data, elapsedTime) {
+        if (!tracking || data === null || calibrating) return;
+        
+        // Filtrar datos fuera de la pantalla
+        if (data.x < 0 || data.y < 0 || data.x > window.innerWidth || data.y > window.innerHeight) return;
+        
+        // Limitar frecuencia de muestreo
+        const now = Date.now();
+        if (now - lastGazeTime < 50) return;
+        lastGazeTime = now;
+        
+        // Actualizar punto visual
+        gazeDot.style.left = data.x + 'px';
+        gazeDot.style.top = data.y + 'px';
+        
+        // Registrar punto para mapa de calor
+        puntosMirada.push({x: data.x, y: data.y, value: 1});
+        heatmap.addData({x: data.x, y: data.y, value: 1});
+      });
+      
+      // Notificación
+      showNotification('Calibración completada con éxito!');
+    }
+    
+    // Esperar a que las librerías estén disponibles
+    function waitForLibraries() {
+      return new Promise((resolve) => {
+        const checkLibraries = () => {
+          if (typeof h337 !== 'undefined' && typeof webgazer !== 'undefined') {
+            resolve();
+          } else {
+            console.log('Esperando librerías...');
+            setTimeout(checkLibraries, 100);
+          }
+        };
+        checkLibraries();
+      });
+    }
+
+    // Inicializar todo al cargar la página
+    window.addEventListener('load', async function() {
+      // Obtener referencias a elementos del DOM
+      eyeToggleBtn = document.getElementById('eye-toggle-btn');
+      trackingPanel = document.getElementById('tracking-panel');
+      startBtn = document.getElementById('btnStartTracking');
+      stopBtn = document.getElementById('btnStopTracking');
+      calibrateBtn = document.getElementById('btnCalibrate');
+      calibrationStatus = document.getElementById('calibration-status');
+      calibrationPoint = document.getElementById('calibration-point');
+      videoContainer = document.getElementById('videoContainer');
+      gazeDot = document.getElementById('gazeDot');
+      heatmapContainer = document.getElementById('heatmapContainer');
+      radiusSlider = document.getElementById('radiusSlider');
+      opacitySlider = document.getElementById('opacitySlider');
+      notification = document.getElementById('notification');
+      notificationText = document.getElementById('notification-text');
+
+      // Verificar que el botón existe
+      if (!eyeToggleBtn) {
+        console.error('¡Botón eye-toggle-btn no encontrado!');
+        return;
+      }
+
+      console.log('Botón eye-tracking encontrado:', eyeToggleBtn);
+
+      // Esperar a que las librerías estén disponibles
+      await waitForLibraries();
+
+      // Inicializar mapa de calor
+      const heatmapReady = initHeatmap();
+
+      if (!heatmapReady) {
+        console.error('No se pudo inicializar el mapa de calor');
+        return;
+      }
+
+      // Configurar WebGazer
+      try {
+        webgazer.setRegression('ridge')       // Usar regresión ridge para mejor precisión
+          .setTracker('clmtrackr')           // Usar tracker clmtrackr
+          .setGazeListener(function(data, elapsedTime) {}) // Listener vacío inicial
+          .begin();                          // Iniciar WebGazer
+
+        // Mostrar vista previa de la cámara (inicialmente oculta)
+        webgazer.showVideoPreview(true).showPredictionPoints(true);
+        videoContainer.style.display = 'none';
+
+        // Configurar para no guardar datos entre sesiones
+        window.saveDataAcrossSessions = false;
+      } catch (error) {
+        console.error('Error al inicializar WebGazer:', error);
+        showNotification('Error al inicializar seguimiento ocular');
+      }
+      
+      // Asegurar que el panel esté inicialmente oculto
+      trackingPanel.style.display = 'none';
+
+      // Event listener adicional para prevenir propagación
+      if (eyeToggleBtn) {
+        eyeToggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          console.log('Event listener para prevenir propagación');
+        });
+      }
+
+      // Ocultar panel al hacer clic fuera de él
+      document.addEventListener('click', function(e) {
+        if (!trackingPanel.contains(e.target) && !eyeToggleBtn.contains(e.target)) {
+          trackingPanel.style.display = 'none';
+        }
+      });
+      
+      // Botón para iniciar seguimiento
+      startBtn.addEventListener('click', startTracking);
+      
+      // Botón para detener seguimiento
+      stopBtn.addEventListener('click', stopTracking);
+      
+      // Botón para calibrar
+      calibrateBtn.addEventListener('click', startCalibration);
+
+      // Botón para verificar laboratorio 8
+      const verifyBtn = document.getElementById('btnVerifyLab8');
+      verifyBtn.addEventListener('click', verificarLaboratorio8);
+
+      // Controles deslizantes para ajustar mapa de calor
+      radiusSlider.addEventListener('input', updateHeatmapConfig);
+      opacitySlider.addEventListener('input', updateHeatmapConfig);
+      
+      // Deshabilitar botones inicialmente
+      stopBtn.disabled = true;
+      calibrateBtn.disabled = true;
+      
+      // Mensaje inicial
+      calibrationStatus.textContent = 'Presione "Iniciar seguimiento" para comenzar';
+    });
+  </script>
+</body>
 </html>
